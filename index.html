@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Individual Project 1.1</title>
+  <style>
+    /* Let's center everything nicely on the screen */
+    body {
+      margin: 0; 
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh; /* makes it fill the whole height of the browser window */
+      background: #eee; /* a light background color, just for looks */
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Here’s a 600×600 SVG that’s centered on the page -->
+  <svg id="mySVG" width="600" height="600"></svg>
+
+  <script>
+    // Our drawing area has fixed dimensions
+    const width  = 600;
+    const height = 600;
+
+    // Get the <svg> element we just added to the page
+    const svg = document.getElementById('mySVG');
+
+    // -------------------------------------------------
+    // Optional: Draw a big border around the entire SVG area.
+    // -------------------------------------------------
+    const borderRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    borderRect.setAttribute('x', 0);
+    borderRect.setAttribute('y', 0);
+    borderRect.setAttribute('width', width);
+    borderRect.setAttribute('height', height);
+    borderRect.setAttribute('fill', 'none');
+    borderRect.setAttribute('stroke', 'black');
+    borderRect.setAttribute('stroke-width', 8);
+    svg.appendChild(borderRect);
+
+    // -------------------------------------------------
+    // First mask: Only reveal things inside our upside-down triangle.
+    // -------------------------------------------------
+    const mask = document.createElementNS('http://www.w3.org/2000/svg', 'mask');
+    mask.setAttribute('id', 'triangle-mask');
+    svg.appendChild(mask);
+
+    // A black rectangle here hides everything by default.
+    const maskRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    maskRect.setAttribute('width', width);
+    maskRect.setAttribute('height', height);
+    maskRect.setAttribute('fill', 'black');
+    mask.appendChild(maskRect);
+
+    // Now we draw our triangle in white – that’s the part that will be visible.
+    const triangle = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+    triangle.setAttribute('points',
+      `${width/2 - 200},${height/2 - 200} ` +
+      `${width/2 + 200},${height/2 - 200} ` +
+      `${width/2},${height/2 + 200}`);
+    triangle.setAttribute('fill', 'white');
+    mask.appendChild(triangle);
+
+    // -------------------------------------------------
+    // Second mask: This one hides anything inside the triangle.
+    // -------------------------------------------------
+    const mask2 = document.createElementNS('http://www.w3.org/2000/svg', 'mask');
+    mask2.setAttribute('id', 'triangle-mask-2');
+    svg.appendChild(mask2);
+
+    // A white rectangle here makes everything visible by default.
+    const maskRect2 = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    maskRect2.setAttribute('width', width);
+    maskRect2.setAttribute('height', height);
+    maskRect2.setAttribute('fill', 'white');
+    mask2.appendChild(maskRect2);
+
+    // Now the same triangle in black – this part will hide content.
+    const triangle2 = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+    triangle2.setAttribute('points',
+      `${width/2 - 200},${height/2 - 200} ` +
+      `${width/2 + 200},${height/2 - 200} ` +
+      `${width/2},${height/2 + 200}`);
+    triangle2.setAttribute('fill', 'black');
+    mask2.appendChild(triangle2);
+
+    // -------------------------------------------------
+    // Draw vertical bars – these will only show up inside the triangle (thanks to mask #1).
+    // -------------------------------------------------
+    const n = 100;
+    for (let i = 0; i < n; i++) {
+      const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      rect.setAttribute('x', i * 10);    // spacing them out by 10 pixels; you can tweak this if needed
+      rect.setAttribute('width', 5);
+      rect.setAttribute('height', height);
+      rect.setAttribute('fill', 'black');
+      rect.setAttribute('stroke', 'black');
+      rect.setAttribute('stroke-width', '1');
+      rect.setAttribute('mask', 'url(#triangle-mask)');
+      svg.appendChild(rect);
+    }
+
+    // -------------------------------------------------
+    // Draw horizontal bars – these appear everywhere except inside the triangle (thanks to mask #2).
+    // -------------------------------------------------
+    for (let i = 0; i < n; i++) {
+      const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      rect.setAttribute('y', i * 10);
+      rect.setAttribute('width', width);
+      rect.setAttribute('height', 5);
+      rect.setAttribute('fill', 'black');
+      rect.setAttribute('stroke', 'black');
+      rect.setAttribute('stroke-width', '1');
+      rect.setAttribute('mask', 'url(#triangle-mask-2)');
+      svg.appendChild(rect);
+    }
+
+    // -------------------------------------------------
+    // Finally, draw an outline around the triangle so we can see its edges (because masks aren’t visible on their own).
+    // -------------------------------------------------
+    const triangleBorder = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+    triangleBorder.setAttribute('points',
+      `${width/2 - 200},${height/2 - 200} ` +
+      `${width/2 + 200},${height/2 - 200} ` +
+      `${width/2},${height/2 + 200}`);
+    triangleBorder.setAttribute('fill', 'none');
+    triangleBorder.setAttribute('stroke', 'black');
+    triangleBorder.setAttribute('stroke-width', 5);
+    svg.appendChild(triangleBorder);
+  </script>
+
+</body>
+</html>

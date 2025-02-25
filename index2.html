@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Approximate Painted Arcs</title>
+  <style>
+    body {
+      margin: 0; 
+      padding: 0;
+      background: #eee;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    svg {
+      border: 1px solid #ccc;
+      background: #fff;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+
+<svg id="mySVG" width="400" height="400"></svg>
+
+<script>
+  // Reference to our <svg>
+  const svg    = document.getElementById('mySVG');
+  const width  = +svg.getAttribute('width');
+  const height = +svg.getAttribute('height');
+
+  // A color sequence somewhat matching the “rainbow” effect in your image;
+  // you can insert black or darker blues, reorder, or add more hues as you like.
+  const colors = [
+    'blue', 'red', 'yellow', 'green', 'orange', 'black', 
+    'blue', 'red', 'yellow', 'green', 'orange' , 'black'
+  ];
+
+  // Helper to draw a circle with no fill, so only the stroke (arc) shows.
+  // When these circles get clipped by the 400×400 box, they appear as arcs.
+  function drawCircle(cx, cy, r, color, strokeW = 15) {
+    const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    circle.setAttribute('cx', cx);
+    circle.setAttribute('cy', cy);
+    circle.setAttribute('r',  r);
+    circle.setAttribute('fill', 'none');
+    circle.setAttribute('stroke', color);
+    circle.setAttribute('stroke-width', strokeW);
+    svg.appendChild(circle);
+  }
+
+  // These three “centers” produce those big arcs like in your reference:
+  //  1) top-left corner, 2) top-right corner, and 3) bottom-middle.
+  const centers = [
+       // top-left
+    [width / 2, height  ],
+    [width , 0      ],
+    [0,  0    ],  // top-right
+       // bottom-center
+  ];
+
+  // Draw many closely spaced rings from each center.
+  // Tweak the step & strokeWidth for more/less dense bands.
+  let colorIndex = 0;
+  centers.forEach(([cx, cy]) => {
+    // The maximum radius is bigger than 400 so arcs extend
+    // beyond corners and intersect each other more dramatically.
+    const startRadius = 0;    
+    const endRadius   = 350;  
+    const step        = 10;   // Decrease to 5 if you want an even denser set
+    const strokeWidth = 15;   // Increase to 20+ if you want thicker bands
+
+    for (let r = startRadius; r <= endRadius; r += step) {
+      const color = colors[colorIndex % colors.length];
+      drawCircle(cx, cy, r, color, strokeWidth);
+      colorIndex++;
+    }
+  });
+</script>
+
+</body>
+</html>
